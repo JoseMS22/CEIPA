@@ -1,0 +1,80 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+.env
+.venv
+venv/
+ENV/
+env.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# === VSCode / IDEs ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs & cache ===
+*.log
+*.tmp
+*.pid
+*.seed
+*.cover
+.cache/
+coverage.xml
+htmlcov/
+
+# === Alembic ===
+alembic/__pycache__/
+alembic/versions/__pycache__/
+alembic/versions/*.pyc
+
+# === Docker ===
+/data/
+*.db
+*.sqlite3
+docker-compose.override.yml
+.env.docker
+
+# === Testing ===
+.pytest_cache/
+tests/__pycache__/
+.coverage
+.tox/
+.nox/
+*.pytest_cache/
+
+# === Editor backups ===
+*~
+*.bak
+*.orig
+*.rej
+*.sublime-workspace
+*.sublime-project
+
+# === Others ===
+__pypackages__/
+.mypy_cache/
+.pyre/
+.dmypy.json
+.prof
+
+# === Local configs ===
+.env
+.env.*
+!env.example
