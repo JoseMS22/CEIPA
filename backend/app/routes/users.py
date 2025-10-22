@@ -50,6 +50,7 @@ def create_user(payload: UserCreate, db: Session = Depends(get_db)):
     user = User(
         name=payload.name,
         email=payload.email,
+        role=payload.role or "PUBLICO",
         password_hash=payload.password,
         password_update_datetime=datetime.utcnow(),  # primera vez que se establece
     )

@@ -9,6 +9,14 @@ from .config import settings
 from .db import get_db
 from .routes.users import router as users_router
 from .routes.auth import router as auth_router
+from .routes.countries import router as countries_router
+from .routes.categories import router as categories_router
+from .routes.indicators import router as indicators_router
+from .routes.scenarios import router as scenarios_router
+from .routes.weights import router as weights_router
+from .routes.indicator_values import router as indicator_values_router
+from .routes.public import router as public_router
+
 
 
 # ==========================================
@@ -73,3 +81,10 @@ API_PREFIX = "/api/v1"
 # Ejemplo: /api/v1/users
 app.include_router(users_router, prefix=API_PREFIX)
 app.include_router(auth_router, prefix=API_PREFIX)
+app.include_router(countries_router, prefix=API_PREFIX)
+app.include_router(categories_router, prefix=API_PREFIX)
+app.include_router(indicators_router, prefix=API_PREFIX)
+app.include_router(scenarios_router, prefix=API_PREFIX)
+app.include_router(weights_router, prefix=API_PREFIX)
+app.include_router(indicator_values_router, prefix=API_PREFIX)
+app.include_router(public_router, prefix=API_PREFIX)
