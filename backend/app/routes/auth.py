@@ -11,6 +11,7 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Optional
+from app.config import settings
 
 from app.db import get_db
 from app.models.user import User as UserModel
@@ -123,12 +124,14 @@ def login(
         extra={"role": user.role, "email": user.email},
     )
 
+    secure_flag = settings.APP_ENV == "production"
+
     # ✅ Guarda token en cookie (para frontend)
     response.set_cookie(
         key="token",
         value=token,
         httponly=True,
-        secure=False,       # True en producción con HTTPS
+        secure=secure_flag,       # True en producción con HTTPS
         samesite="Lax",     # permite 3000 → 8000
         path="/",
         max_age=60 * 60 * 8,
@@ -149,6 +152,9 @@ def login(
 # -----------------------------
 @router.post("/logout")
 def logout(response: Response):
+
+    secure_flag = settings.APP_ENV == "production"
+
     response.set_cookie(
         key="token",
         value="",
@@ -156,7 +162,7 @@ def logout(response: Response):
         expires=0,
         path="/",
         httponly=True,
-        secure=False,  # prod => True
+        secure=secure_flag,  # prod => True
         samesite="lax",
     )
     return {"ok": True}
