@@ -1,17 +1,16 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:16
     container_name: ceipa_db
-    environment:
-      POSTGRES_USER: ceipa
-      POSTGRES_PASSWORD: ceipa_pwd
-      POSTGRES_DB: ceipa_risk
+    restart: unless-stopped
+    env_file:
+      - ./infra/db.env           # 👈 credenciales de Postgres
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ceipa -d ceipa_risk"]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -19,33 +18,45 @@ services:
   backend:
     build: ./backend
     container_name: ceipa_backend
+    restart: unless-stopped
     env_file:
       - ./backend/.env
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"
-    # 🔑 Montar tu código y migraciones para hot-reload y alembic en vivo
-    volumes:
-      - ./backend/app:/app/app
-      - ./backend/alembic:/app/alembic
-      - ./backend/alembic.ini:/app/alembic.ini
-      - ./backend/tests:/app/tests
-    # 🚀 Aplica migraciones y arranca con autoreload
     environment:
-      - PYTHONPATH=/app 
+      - PYTHONPATH=/app
     command: >
       sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    #volumes:
+    #  - ./backend/alembic/versions:/app/alembic/versions
 
-  #frontend:
-  #  build: ./frontend
-  #  container_name: ceipa_frontend
-  #  depends_on:
-  #    - backend
-  #  ports:
-  #    - "3000:3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ceipa_frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env.production
+    depends_on:
+      - backend
+    command: "npm run start"
+    volumes: []
+
+  nginx:
+    image: nginx:latest
+    container_name: ceipa_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
 
 volumes:
   db_data:

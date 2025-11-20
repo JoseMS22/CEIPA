@@ -11,11 +11,12 @@ class IndicatorValue(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
 
+    scenario_id: Mapped[int] = mapped_column(ForeignKey("scenarios.id"), nullable=False)
     country_id: Mapped[int]   = mapped_column(ForeignKey("countries.id"), nullable=False)
     indicator_id: Mapped[int] = mapped_column(ForeignKey("indicators.id"), nullable=False)
 
-    raw_value:        Mapped[float | None] = mapped_column(Numeric(18, 6), nullable=True)
-    normalized_value: Mapped[float | None] = mapped_column(Numeric(6, 4),  nullable=True)
+    raw_value:        Mapped[float | None] = mapped_column(Numeric(30, 6), nullable=True)
+    normalized_value: Mapped[float | None] = mapped_column(Numeric(10, 4),  nullable=True)
 
     loaded_at:  Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     loaded_by:  Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
@@ -25,8 +26,7 @@ class IndicatorValue(Base):
     indicator = relationship("Indicator", lazy="joined")
 
     __table_args__ = (
-        UniqueConstraint("country_id", "indicator_id", name="uq_country_indicator"),
-        Index("idx_indicator_values_country", "country_id"),
+        UniqueConstraint("scenario_id", "country_id", "indicator_id", name="uq_scenario_country_indicator"),
         Index("idx_indicator_values_indicator", "indicator_id"),
         CheckConstraint(
             "normalized_value IS NULL OR (normalized_value >= 0 AND normalized_value <= 5)",

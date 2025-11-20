@@ -27,10 +27,13 @@ def set_category_weights(payload: CategoryWeightsPayload, db: Session = Depends(
     repo.upsert_category_weights(db, payload)
     return None
 
-@router.put("/indicators", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_admin)])
+@router.put(
+    "/indicators",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_admin)]
+)
 def set_indicator_weights(payload: IndicatorWeightsPayload, db: Session = Depends(get_db)):
-    s = sum(i.weight for i in payload.items)
-    if abs(s - 1.0) > 1e-6:
-        raise HTTPException(422, detail="La suma de pesos de indicadores debe ser 1.0")
+    # ya no validamos que sumen 1.0 porque el front lo controla
     repo.upsert_indicator_weights(db, payload)
     return None
+

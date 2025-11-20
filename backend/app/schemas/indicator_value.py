@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 
 class IndicatorValueBase(BaseModel):
+    scenario_id: int
     country_id: int
     indicator_id: int
     raw_value: confloat(ge=-1e15, le=1e15) | None = None

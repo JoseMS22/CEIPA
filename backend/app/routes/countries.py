@@ -11,7 +11,7 @@ router = APIRouter(prefix="/countries", tags=["Countries"])
 def list_countries(
     q: str | None = Query(default=None, description="Buscar por nombre/ISO"),
     page: int = Query(default=1, ge=1),
-    limit: int = Query(default=20, ge=1, le=100),
+    limit: int = Query(default=20, ge=0, le=500),
     only_enabled: bool = Query(default=True),
     db: Session = Depends(get_db),
 ):

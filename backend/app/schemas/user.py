@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr, Field
 from pydantic import ConfigDict  # Pydantic v2
 from typing import List
 
-ROLE_PATTERN = "^(ADMIN|PUBLICO)$"
+ROLE_PATTERN = "^(ADMIN|ANALISTA|PUBLICO)$"
 
 # Campos compartidos
 class UserBase(BaseModel):

@@ -1,4 +1,6 @@
-# === Python ===
+######################################
+# === Python backend ===
+######################################
 __pycache__/
 *.py[cod]
 *.pyo
@@ -10,6 +12,7 @@ build/
 dist/
 .eggs/
 .env
+.env.*
 .venv
 venv/
 ENV/
@@ -17,64 +20,76 @@ env.bak/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# === VSCode / IDEs ===
-.vscode/
-.idea/
-*.swp
-*.swo
-*.bak
-
-# === OS files ===
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# === Logs & cache ===
-*.log
-*.tmp
-*.pid
-*.seed
-*.cover
-.cache/
-coverage.xml
-htmlcov/
-
-# === Alembic ===
+# Alembic
 alembic/__pycache__/
 alembic/versions/__pycache__/
 alembic/versions/*.pyc
 
-# === Docker ===
-/data/
-*.db
-*.sqlite3
-docker-compose.override.yml
-.env.docker
-
-# === Testing ===
+# Testing
 .pytest_cache/
 tests/__pycache__/
 .coverage
 .tox/
 .nox/
 *.pytest_cache/
+htmlcov/
+coverage.xml
 
-# === Editor backups ===
-*~
+# Mypy / typing
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+######################################
+# === Node / Frontend (Next.js) ===
+######################################
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js build
+.next/
+out/
+
+# Lockfiles (si usas solo uno)
+package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+######################################
+# === IDE / OS ===
+######################################
+.vscode/
+.idea/
+*.swo
+*.swp
 *.bak
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
 *.orig
 *.rej
-*.sublime-workspace
-*.sublime-project
 
-# === Others ===
-__pypackages__/
-.mypy_cache/
-.pyre/
-.dmypy.json
-.prof
+######################################
+# === Docker ===
+######################################
+.dockerignore
+docker-compose.override.yml
+.env.docker
+*.tar
+docker-volume/
+db_data/
+*.db
+*.sqlite3
 
+######################################
 # === Local configs ===
+######################################
 .env
 .env.*
 !env.example
+infra/db.env

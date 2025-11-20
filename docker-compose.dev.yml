@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ceipa_db
+    environment:
+      POSTGRES_USER: ceipa
+      POSTGRES_PASSWORD: ceipa_pwd
+      POSTGRES_DB: ceipa_risk
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ceipa -d ceipa_risk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: ceipa_backend
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    # 🔑 Montar tu código y migraciones para hot-reload y alembic en vivo
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./backend/alembic.ini:/app/alembic.ini
+      - ./backend/tests:/app/tests
+    # 🚀 Aplica migraciones y arranca con autoreload
+    environment:
+      - PYTHONPATH=/app 
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ceipa_frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: "npm run dev"
+
+
+volumes:
+  db_data:

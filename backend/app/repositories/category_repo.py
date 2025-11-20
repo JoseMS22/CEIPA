@@ -1,9 +1,15 @@
 from math import ceil
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+import re
+
 from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryUpdate
-import re
+
+from app.models.weights import CategoryWeight, IndicatorWeight
+from app.models.indicator import Indicator
+from app.models.indicator_value import IndicatorValue  # ajusta el nombre del archivo si cambia
+
 
 def slugify(s: str) -> str:
     s = s.lower().strip()
@@ -11,6 +17,7 @@ def slugify(s: str) -> str:
     s = re.sub(r"\s+", "-", s)
     s = re.sub(r"-+", "-", s)
     return s
+
 
 def list_categories(db: Session, q: str | None, page: int, limit: int):
     stmt = select(Category)
@@ -32,18 +39,17 @@ def list_categories(db: Session, q: str | None, page: int, limit: int):
         "items": rows,
     }
 
-def get_by_id(db: Session, category_id: int) -> Category | None:
-    return db.get(Category, category_id)
 
 def get_by_slug(db: Session, slug: str) -> Category | None:
     return db.scalar(select(Category).where(Category.slug == slug))
 
+
 def get_by_name(db: Session, name: str) -> Category | None:
     return db.scalar(select(Category).where(Category.name == name))
 
+
 def create_category(db: Session, data: CategoryCreate) -> Category:
     slug = slugify(data.name)
-    # Evita duplicados
     if get_by_slug(db, slug):
         raise ValueError("slug ya está en uso")
     c = Category(**data.model_dump(), slug=slug)
@@ -51,6 +57,7 @@ def create_category(db: Session, data: CategoryCreate) -> Category:
     db.commit()
     db.refresh(c)
     return c
+
 
 def update_category(db: Session, cat: Category, data: CategoryUpdate) -> Category:
     for k, v in data.model_dump(exclude_unset=True).items():
@@ -62,6 +69,53 @@ def update_category(db: Session, cat: Category, data: CategoryUpdate) -> Categor
     db.refresh(cat)
     return cat
 
-def delete_category(db: Session, cat: Category) -> None:
-    db.delete(cat)
+
+def delete_category(db: Session, category: Category) -> None:
+    """
+    Elimina un entorno (categoría) y EN CASCADA:
+    - todos sus indicadores
+    - todos los pesos de esos indicadores
+    - todos los valores de esos indicadores
+
+    Solo se bloquea si la categoría está asignada a uno o más escenarios.
+    """
+
+    # 1) ¿Está asignado a escenarios? (CategoryWeight = escenario-entorno)
+    assigned_count = (
+        db.query(CategoryWeight)
+        .filter(CategoryWeight.category_id == category.id)
+        .count()
+    )
+    if assigned_count > 0:
+        raise ValueError(
+            "No se puede eliminar el entorno porque está asignado a uno o más escenarios. "
+            "Primero elimínalo de esos escenarios."
+        )
+
+    # 2) Obtener IDs de indicadores EXCLUSIVAMENTE desde la tabla, sin usar category.indicators
+    indicator_ids = [
+        row[0]
+        for row in db.query(Indicator.id)
+        .filter(Indicator.category_id == category.id)
+        .all()
+    ]
+
+    if indicator_ids:
+        # 2.a) Borrar valores de esos indicadores
+        db.query(IndicatorValue).filter(
+            IndicatorValue.indicator_id.in_(indicator_ids)
+        ).delete(synchronize_session=False)
+
+        # 2.b) Borrar pesos de esos indicadores
+        db.query(IndicatorWeight).filter(
+            IndicatorWeight.indicator_id.in_(indicator_ids)
+        ).delete(synchronize_session=False)
+
+        # 2.c) Borrar los indicadores
+        db.query(Indicator).filter(
+            Indicator.id.in_(indicator_ids)
+        ).delete(synchronize_session=False)
+
+    # 3) Finalmente borrar la categoría
+    db.delete(category)
     db.commit()

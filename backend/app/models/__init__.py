@@ -6,3 +6,4 @@ from .indicator import Indicator
 from .scenario import Scenario
 from .weights import CategoryWeight, IndicatorWeight
 from .indicator_value import IndicatorValue
+from .public_description import PublicDescription

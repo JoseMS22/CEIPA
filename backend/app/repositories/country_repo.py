@@ -23,6 +23,18 @@ def list_countries(db: Session, q: str | None, page: int, limit: int, only_enabl
         select(func.count()).select_from(stmt.subquery())
     ) or 0
 
+    if limit == 0:
+        rows = db.scalars(
+            stmt.order_by(Country.name_es.asc(), Country.iso2.asc())
+        ).all()
+        return {
+            "page": 1,
+            "limit": 0,
+            "total": total,
+            "total_pages": 1,
+            "items": rows,
+        }
+
     # paginado (orden estable por nombre_es, luego iso2)
     offset = (page - 1) * limit
     rows = db.scalars(

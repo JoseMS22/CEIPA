@@ -16,6 +16,8 @@ from .routes.scenarios import router as scenarios_router
 from .routes.weights import router as weights_router
 from .routes.indicator_values import router as indicator_values_router
 from .routes.public import router as public_router
+from .routes.public_descriptions import router as public_descriptions_router
+
 
 
 
@@ -70,7 +72,7 @@ def health():
 def db_health(db: Session = Depends(get_db)):
     """Verifica conexión a la base de datos."""
     ok = db.execute(text("SELECT 1")).scalar() == 1
-    return {"database": settings.DB_NAME, "ok": ok}
+    return {"database_url": settings.DATABASE_URL, "ok": ok}
 
 
 # ==========================================
@@ -88,3 +90,4 @@ app.include_router(scenarios_router, prefix=API_PREFIX)
 app.include_router(weights_router, prefix=API_PREFIX)
 app.include_router(indicator_values_router, prefix=API_PREFIX)
 app.include_router(public_router, prefix=API_PREFIX)
+app.include_router(public_descriptions_router, prefix=API_PREFIX)
