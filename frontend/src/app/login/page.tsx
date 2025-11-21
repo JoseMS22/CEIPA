@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect,useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { api } from "@/lib/api";
 import Cookies from "js-cookie";
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
   const search = useSearchParams();
   const next = search.get("next") || "/dashboard";
@@ -14,14 +14,13 @@ export default function LoginPage() {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) router.replace(next);
-  }, []);
+  }, [router, next]);
 
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
@@ -30,9 +29,11 @@ export default function LoginPage() {
       const form = new FormData();
       form.set("username", email.trim().toLowerCase());
       form.set("password", pass);
+
       await api.post("/v1/auth/login", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       router.replace(next);
     } catch (e: any) {
       const detail = e?.response?.data?.detail;
@@ -44,8 +45,8 @@ export default function LoginPage() {
 
   return (
     <main className="relative min-h-screen w-full bg-gradient-to-b from-[#0E1F36] via-[#0E1F36] to-[#1E3356]">
-      {/* 🔹 Logo esquineado */}
-      <div className="absolute top-3 sm:top-2 md:top-1 left-8 flex items-center gap-2">
+      {/* Logo */}
+      <div className="absolute top-3 left-8 flex items-center gap-2">
         <Image
           src="/ceipa-logo.png"
           alt="CEIPA"
@@ -58,10 +59,9 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* 🔹 Contenido centrado vertical y horizontal */}
+      {/* Contenido */}
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
-          {/* 🔹 Título centrado */}
           <h1 className="mb-8 text-center text-2xl font-bold text-[#1E3356]">
             Acceso Administrador
           </h1>
@@ -76,7 +76,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Ingrese su correo"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm outline-none ring-0 focus:border-zinc-300"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm outline-none"
               />
             </div>
 
@@ -91,11 +91,9 @@ export default function LoginPage() {
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 placeholder="Ingrese su contraseña"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm outline-none ring-0 focus:border-zinc-300"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm outline-none"
               />
             </div>
-
-            
 
             {err && (
               <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -106,7 +104,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#1E3356] px-4 py-2 text-white transition hover:brightness-110 disabled:opacity-60"
+              className="w-full rounded-xl bg-[#1E3356] px-4 py-2 text-white hover:brightness-110 disabled:opacity-60"
             >
               {loading ? "Ingresando..." : "Ingresar"}
             </button>
@@ -114,5 +112,14 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// 🔥 Ahora sí, Next.js puede prerender sin fallar
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
   );
 }

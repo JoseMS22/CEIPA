@@ -322,7 +322,7 @@ export default function EscenariosPage() {
                         window.location.href = `/dashboard/escenarios/${esc.id}/valores`;
                       }}
                     >
-                      Valores variables
+                      Valores indicadores
                     </button>
                     <button
                       onClick={() => canEditThis && openEditModal(esc)}

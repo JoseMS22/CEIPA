@@ -856,7 +856,7 @@ export default function ScenarioIndicatorValuesPage() {
               <div className="space-y-2">
                 {sc.indicators.length === 0 ? (
                   <p className="text-xs text-zinc-400">
-                    Este entorno no tiene variables.
+                    Este entorno no tiene indicadores.
                   </p>
                 ) : (
                   sc.indicators.map((ind) => {

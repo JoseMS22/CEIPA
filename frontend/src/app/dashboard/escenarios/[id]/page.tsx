@@ -222,7 +222,7 @@ export default function ScenarioDetailPage() {
       setIndicatorWeights(initial);
     } catch (err) {
       console.error(err);
-      setErrorModal("No se pudieron cargar las variables de este entorno.");
+      setErrorModal("No se pudieron cargar los indicadores de este entorno.");
     } finally {
       setLoadingIndicators(false);
     }
@@ -262,7 +262,7 @@ export default function ScenarioDetailPage() {
     }
 
     if (indicatorSum !== 100) {
-      setErrorModal("Las variables de este entorno deben sumar 100%.");
+      setErrorModal("Las indicadores de este entorno deben sumar 100%.");
       return;
     }
 
@@ -352,7 +352,7 @@ export default function ScenarioDetailPage() {
     if (editCatId == null) return;
 
     if (editIndicators.length > 0 && editIndicatorsSum !== 100) {
-      setErrorEdit("Las variables de este entorno deben sumar 100%.");
+      setErrorEdit("Las indicadores de este entorno deben sumar 100%.");
       return;
     }
 
@@ -576,7 +576,7 @@ export default function ScenarioDetailPage() {
                   <div className="mt-3 space-y-2">
                     {indicatorsOfCat.length === 0 ? (
                       <p className="text-xs text-white/50">
-                        Este entorno aún no tiene variables.
+                        Este entorno aún no tiene indicadores.
                       </p>
                     ) : (
                       indicatorsOfCat.map((ind) => {
@@ -647,13 +647,13 @@ export default function ScenarioDetailPage() {
 
           <div>
             <p className="mb-2 text-sm font-medium text-zinc-700">
-              Variables del entorno
+              indicadores del entorno
             </p>
             {loadingIndicators ? (
-              <p className="text-xs text-zinc-500">Cargando variables...</p>
+              <p className="text-xs text-zinc-500">Cargando indicadores...</p>
             ) : categoryIndicators.length === 0 ? (
               <p className="text-xs text-zinc-400">
-                Seleccione un entorno para ver sus variables.
+                Seleccione un entorno para ver sus indicadores.
               </p>
             ) : (
               <>
@@ -687,7 +687,7 @@ export default function ScenarioDetailPage() {
                       : "text-red-500"
                   }`}
                 >
-                  Total variables: {indicatorSum}%{" "}
+                  Total indicadores: {indicatorSum}%{" "}
                   {indicatorSum !== 100 && "(debe ser 100%)"}
                 </p>
               </>
@@ -733,11 +733,11 @@ export default function ScenarioDetailPage() {
 
           <div>
             <p className="mb-2 text-sm font-medium text-zinc-700">
-              Variables de este entorno
+              Indicadores de este entorno
             </p>
             {editIndicators.length === 0 ? (
               <p className="text-xs text-zinc-400">
-                Este entorno no tiene variables.
+                Este entorno no tiene indicadores.
               </p>
             ) : (
               <>
@@ -771,7 +771,7 @@ export default function ScenarioDetailPage() {
                       : "text-red-500"
                   }`}
                 >
-                  Total variables: {editIndicatorsSum}%{" "}
+                  Total indicadores: {editIndicatorsSum}%{" "}
                   {editIndicatorsSum !== 100 && "(debe ser 100%)"}
                 </p>
               </>

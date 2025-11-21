@@ -6,7 +6,7 @@ from app.core.security import hash_password
 def run():
     db = SessionLocal()
     try:
-        email = "admin@ceipa.com"
+        email = "daniel.bonilla@ceipa.edu.co"
         u = db.query(User).filter(User.email == email).first()
         if not u:
             u = User(
@@ -17,7 +17,7 @@ def run():
             )
             db.add(u)
             db.commit()
-            print("✅ Admin creado: admin@ceipa.com / Admin#12345")
+            print("✅ Admin creado: daniel.bonilla@ceipa.edu.co / Admin#12345")
         else:
             print("ℹ️ Admin ya existe")
     finally:

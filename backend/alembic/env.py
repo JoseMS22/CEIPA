@@ -14,10 +14,7 @@ config = context.config
 
 # Configura la URL de conexión a la BD desde tus settings
 def get_url():
-    return (
-        f"postgresql+psycopg://{settings.DB_USER}:{settings.DB_PASSWORD}"
-        f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
-    )
+    return settings.DATABASE_URL
 
 config.set_main_option("sqlalchemy.url", get_url())
 
