@@ -31,8 +31,8 @@ services:
     command: >
       sh -c "alembic upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"
-    #volumes:
-    #  - ./backend/alembic/versions:/app/alembic/versions
+    ports:
+      - "127.0.0.1:8000:8000"
 
 
   frontend:
@@ -46,6 +46,8 @@ services:
     depends_on:
       - backend
     command: "npm run start"
+    ports:
+      - "127.0.0.1:3000:3000"
     volumes: []
 
 volumes:
