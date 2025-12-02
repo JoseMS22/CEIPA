@@ -27,43 +27,51 @@ def get_by_name(db: Session, name: str) -> Scenario | None:
     return db.scalar(select(Scenario).where(Scenario.name == name))
 
 def create(db: Session, data: ScenarioCreate, user_id: int | None) -> Scenario:
-    # Si llega active=True, apagamos cualquier otro antes de insertar
-    if data.active:
-        db.query(Scenario).update({Scenario.active: False})
-    sc = Scenario(**data.model_dump(), created_by=user_id)
+    """
+    Crea un escenario. Si viene marcado como active=True y el usuario tiene permiso,
+    luego se llama a set_active_exclusive para que quede como único activo.
+    """
+    # Creamos el escenario tal cual viene en el payload
+    sc = Scenario(
+        name=data.name,
+        description=data.description,
+        active=data.active,
+        created_by=user_id,
+    )
     db.add(sc)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        # Si chocó con el índice único (caso carrera), forzamos exclusividad y reintentamos
-        db.query(Scenario).update({Scenario.active: False})
-        sc.active = True
-        db.add(sc)
-        db.commit()
+    db.commit()
     db.refresh(sc)
+
+    # Si debe quedar activo, garantizamos exclusividad
+    if sc.active:
+        set_active_exclusive(db, sc.id)
+        db.refresh(sc)
+
     return sc
 
 def update(db: Session, sc: Scenario, data: ScenarioUpdate) -> Scenario:
+    """
+    Actualiza un escenario. Si en el payload se pide active=True,
+    al final se llama a set_active_exclusive para que solo este quede activo.
+    """
     payload = data.model_dump(exclude_unset=True)
-    # Si piden activar este escenario, desactiva los demás primero
-    if "active" in payload and payload["active"] is True:
-        db.query(Scenario).update({Scenario.active: False})
-        sc.active = True
-        payload.pop("active", None)  # ya lo aplicamos
+
+    # ¿Se está pidiendo explícitamente activar este escenario?
+    should_activate = payload.get("active") is True
+
+    # Aplicar cambios normales
     for k, v in payload.items():
         setattr(sc, k, v)
+
     db.add(sc)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        # mismísima estrategia anti-carrera
-        db.query(Scenario).update({Scenario.active: False})
-        sc.active = True
-        db.add(sc)
-        db.commit()
+    db.commit()
     db.refresh(sc)
+
+    # Si deberíamos activarlo en exclusiva, lo hacemos ahora
+    if should_activate:
+        set_active_exclusive(db, sc.id)
+        db.refresh(sc)
+
     return sc
 
 def delete(db: Session, scenario: Scenario) -> None:

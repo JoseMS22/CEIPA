@@ -20,6 +20,4 @@ class Scenario(Base):
     __table_args__ = (
         UniqueConstraint("name", name="uq_scenarios_name"),
         Index("idx_scenarios_name_active", "name", "active"),
-        # 👉 Este índice garantiza que solo haya 1 fila con active = true
-        Index("uq_one_active_scenario", "active", unique=True, postgresql_where=text("active = true")),
     )
