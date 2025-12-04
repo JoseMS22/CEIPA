@@ -1,12 +1,12 @@
 // frontend/src/lib/heatColors.ts
 
 /**
- * Devuelve un color HEX (#rrggbb) en escala de rojo → amarillo → verde
+ * Devuelve un color HEX (#rrggbb) en escala de verde → amarillo → rojo
  * para un valor entre 0 y 5.
  *
- * 0   → rojo oscuro (#8B0000)
- * 2.5 → amarillo (#FFD700)
- * 5   → verde oscuro (#006400)
+ * 0   → verde oscuro (#006400)     = menor riesgo
+ * 2.5 → amarillo (#FFD700)          = riesgo medio
+ * 5   → rojo oscuro (#8B0000)       = mayor riesgo
  */
 export function getHeatColor(value: number): string {
   // Aseguramos el rango 0–5
@@ -16,16 +16,24 @@ export function getHeatColor(value: number): string {
   const t = v / 5;
 
   // Dos tramos:
-  // 0 → 0.5: rojo → amarillo
-  // 0.5 → 1: amarillo → verde
+  // 0 → 0.5: verde → amarillo
+  // 0.5 → 1: amarillo → rojo
   if (t <= 0.5) {
-    // Interpolamos entre rojo (#8B0000) y amarillo (#FFD700)
+    // Interpolamos entre verde (#006400) y amarillo (#FFD700)
     const tt = t / 0.5; // 0–1
-    return lerpColor({ r: 139, g: 0, b: 0 }, { r: 255, g: 215, b: 0 }, tt);
+    return lerpColor(
+      { r: 0, g: 100, b: 0 },        // verde
+      { r: 255, g: 215, b: 0 },     // amarillo
+      tt
+    );
   } else {
-    // Interpolamos entre amarillo (#FFD700) y verde (#006400)
+    // Interpolamos entre amarillo (#FFD700) y rojo (#8B0000)
     const tt = (t - 0.5) / 0.5; // 0–1
-    return lerpColor({ r: 255, g: 215, b: 0 }, { r: 0, g: 100, b: 0 }, tt);
+    return lerpColor(
+      { r: 255, g: 215, b: 0 },     // amarillo
+      { r: 139, g: 0, b: 0 },       // rojo
+      tt
+    );
   }
 }
 
