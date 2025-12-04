@@ -228,7 +228,7 @@ export const GlobalIndexMap = forwardRef<GlobalIndexMapRef, GlobalIndexMapProps>
           </div>
 
           {selected && (
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-xs mt-2 max-h-48 overflow-y-auto pr-1">
               {selected.envs.map((env) => (
                 <Fragment key={env.categoryId}>
                   {renderBarRow(env.name, env.value)}
@@ -237,17 +237,21 @@ export const GlobalIndexMap = forwardRef<GlobalIndexMapRef, GlobalIndexMapProps>
             </div>
           )}
 
-          <div className="mt-2 text-xs text-zinc-600">
+          <div className="mt-3 text-xs text-zinc-600">
             Escala de colores (0–5)
-            <div className="h-3 rounded-full mt-1 bg-[linear-gradient(to_right,#8B0000,#FFD700,#006400)]" />
+            {/* Verde (0) -> Amarillo -> Rojo (5) */}
+            <div className="h-3 rounded-full mt-1 bg-[linear-gradient(to_right,#006400,#FFD700,#8B0000)]" />
             <div className="flex justify-between text-[10px] text-zinc-500 mt-1">
               <span>0</span>
               <span>2.5</span>
               <span>5</span>
             </div>
+            <div className="mt-1 text-[10px] text-zinc-500">
+              0 (verde) indica menor riesgo y 5 (rojo) indica mayor riesgo.
+            </div>
           </div>
 
-          <p className="text-[11px] text-zinc-500 mt-auto">
+          <p className="text-[11px] text-zinc-500">
             Haz clic en un país del mapa para ver su detalle.
           </p>
         </aside>

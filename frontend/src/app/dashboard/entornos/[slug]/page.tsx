@@ -387,11 +387,10 @@ export default function EntornoDetailPage() {
                     <button
                       onClick={() => canModify && openEditModal(ind)}
                       disabled={!canModify}
-                      className={`${
-                        canModify
-                          ? "hover:text-white/90"
-                          : "opacity-40 cursor-not-allowed"
-                      }`}
+                      className={`${canModify
+                        ? "hover:text-white/90"
+                        : "opacity-40 cursor-not-allowed"
+                        }`}
                       title={
                         canModify
                           ? "Editar"
@@ -403,11 +402,10 @@ export default function EntornoDetailPage() {
                     <button
                       onClick={() => canModify && openDeleteModal(ind)}
                       disabled={!canModify}
-                      className={`${
-                        canModify
-                          ? "hover:text-white/90"
-                          : "opacity-40 cursor-not-allowed"
-                      }`}
+                      className={`${canModify
+                        ? "hover:text-white/90"
+                        : "opacity-40 cursor-not-allowed"
+                        }`}
                       title={
                         canModify
                           ? "Eliminar"
@@ -455,6 +453,15 @@ export default function EntornoDetailPage() {
                 <option value="DMP">DMP</option>
                 <option value="IMP">IMP</option>
               </select>
+
+              {/* Texto de ayuda sobre DMP / IMP */}
+              <p className="mt-1 text-[11px] text-zinc-500 max-w-xs">
+                <span className="font-semibold">DMP</span> (directamente proporcional):
+                a mayor valor del dato, <span className="font-semibold">mayor riesgo</span>.
+                <br />
+                <span className="font-semibold">IMP</span> (inversamente proporcional):
+                a mayor valor del dato, <span className="font-semibold">menor riesgo</span>.
+              </p>
             </div>
 
             <div className="flex items-end gap-3">
@@ -552,6 +559,15 @@ export default function EntornoDetailPage() {
                 <option value="DMP">DMP</option>
                 <option value="IMP">IMP</option>
               </select>
+
+              {/* Texto de ayuda sobre DMP / IMP */}
+              <p className="mt-1 text-[11px] text-zinc-500 max-w-xs">
+                <span className="font-semibold">DMP</span> (directamente proporcional):
+                a mayor valor del dato, <span className="font-semibold">mayor riesgo</span>.
+                <br />
+                <span className="font-semibold">IMP</span> (inversamente proporcional):
+                a mayor valor del dato, <span className="font-semibold">menor riesgo</span>.
+              </p>
             </div>
 
             <div className="flex items-end gap-3">
